@@ -1,0 +1,31 @@
+clc
+clear
+close all
+
+t = 0:1e-6:10*1/10e3;
+H = 25*sin(2*pi*10e3*t);
+parameter = parameter_of_simulation();
+n = [0.893,0.912,1.153,1.542,5.041]*1e-3;
+u_B = zeros(5,1000);
+u_N = zeros(5,1000);
+parfor i=1:5
+    parameter = parameter_of_simulation("n",n(i));
+    [~,ub,un] = simdata_synomag(H,t,parameter);
+    u_B(i,:)=ub;
+    u_N(i,:)=un;
+end
+u_B = u_B';
+u_N = u_N';
+
+u_normalize = zeros(1000,5);
+for i = 1:5
+    u_normalize(:,i) = u_B(:,i)/max(max(u_B(:,i)));
+end
+
+figure
+plot(u_B,LineWidth=2)
+legend("0%","1%","10%","20%","50%")
+
+figure
+plot(u_normalize(800:end,:),LineWidth=2)
+legend("0%","1%","10%","20%","50%")
